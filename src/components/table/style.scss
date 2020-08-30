@@ -1,0 +1,41 @@
+.table {
+    max-width: 1000px;
+
+    &__filter {
+        display: flex;
+        flex-wrap: wrap;
+        text-align: left;
+        margin-bottom: 20px;
+
+        &-sort {
+            flex: 1 1 auto;
+        }
+
+        &-language {
+            width: 50%;
+        }
+
+        &-row {
+            margin-bottom: 15px;
+        }
+
+        &-view {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin-left: 80px;
+
+            .table__filter-row {
+                flex: 1 1 auto;
+            }
+
+            .items {
+                height: 100%;
+            }
+        }
+    }
+
+    &__search {
+        margin-bottom: 30px;
+    }
+}

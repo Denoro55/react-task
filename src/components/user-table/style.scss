@@ -1,0 +1,19 @@
+@import '../../layout/styles/system/vars';
+
+.user-table {
+    width: 100%;
+    border: 1px solid $color_gray;
+    border-spacing: 0;
+
+    td {
+        border-bottom: 1px solid $color_gray;
+        text-align: left;
+        padding: 12px;
+    }
+
+    tr:last-child {
+        td {
+            border-bottom: 0;
+        }
+    }
+}

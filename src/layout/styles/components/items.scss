@@ -1,0 +1,8 @@
+.items {
+    display: flex;
+
+    &__item {
+        display: flex;
+        flex: 1 1 auto;
+    }
+}
