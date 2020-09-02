@@ -1,13 +1,16 @@
 import React from "react";
 
 interface ItemProps {
+    id: number,
     name: string,
     age: string,
     phone: string,
-    phrase: string
+    phrase: string,
+    favourite: boolean,
+    handleFavorite: (id: number) => void
 }
 
-const renderItem: React.FC<ItemProps> = ({name, age, phone, phrase}) => {
+const renderItem: React.FC<ItemProps> = ({id, name, age, phone, phrase, favourite, handleFavorite}) => {
     return (
         <div className="user-info">
             <div className="user-info__head">
@@ -20,8 +23,8 @@ const renderItem: React.FC<ItemProps> = ({name, age, phone, phrase}) => {
                     { name }
                 </div>
                 <div className="user-info__star">
-                    <div className="star">
-                        <i className="fa fa-star-o" aria-hidden="true"></i>
+                    <div onClick={() => handleFavorite(id)} className="star">
+                        <i className={`fa ${favourite ? 'fa-star' : 'fa-star-o'}`} aria-hidden="true"></i>
                     </div>
                 </div>
             </div>

@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import './style.scss'
-
+import { useTranslation } from "react-i18next";
 import UserTable from "../user-table";
 import UserPreview from "../user-preview";
 import Radio from "../form/radio";
-import {getData} from "../../api";
-
-import { useTranslation } from "react-i18next";
+import { getData } from "../../api";
+import { buildQuery, parseUrl, findInArrayAndUpdate } from "../../helpers";
+import { useSelector, connect } from "react-redux";
+import * as actions from "../../store/action";
 
 enum Language {
     russian = 'ru',
@@ -23,23 +24,48 @@ enum ViewType {
     preview = 'preview'
 }
 
-const Table: React.FC = () => {
-    const [data, setData] = useState([]);
+const Table: React.FC = (props: any) => {
+    const { actionSetData } = props;
+    const query: any = parseUrl(props.location.search);
+
+    const data: any = useSelector(state => state);
     const [list, setList] = useState([]);
 
     // filter
-    const [sortValue, setSortValue] = useState('id');
-    const [sortDir, setSortDir] = useState(SortDir.increase);
-    const [listType, setListType] = useState(ViewType.table);
+    const [term, setTerm] = useState('');
+    const [sortValue, setSortValue] = useState(query.sortValue || 'id');
+    const [sortDir, setSortDir] = useState(query.sortDir || SortDir.increase);
+    const [listType, setListType] = useState(query.listType || ViewType.table);
 
     const { t, i18n } = useTranslation();
 
     useEffect(() => {
         getData().then((response: any) => {
-            setData(response.data);
-            setList(response.data);
-        })
+            actionSetData(response.data);
+            setList(sortData(response.data, sortValue, sortDir));
+        });
     }, []);
+
+    useEffect(() => {
+        const { history } = props;
+        history.push(`?${buildQuery({
+            term,
+            sortValue, 
+            sortDir, 
+            listType
+        })}`)
+    }, [term, sortValue, sortDir, listType]);
+
+    const toggleFavorite = (id: number) => {
+        const { toggleFavorite: actionToggleFavorite } = props;
+        const newList: any = findInArrayAndUpdate(id, list, (item: any) => {
+            return {
+                favourite: !item.favourite
+            }
+        });
+        setList(newList);
+        actionToggleFavorite(id);
+    };
 
     const changeLanguage = (lng: string) => {
         i18n.changeLanguage(lng);
@@ -63,11 +89,11 @@ const Table: React.FC = () => {
 
             return state.sort((a: any, b: any) => {
                 const nameA = a.name.toLowerCase(), nameB = b.name.toLowerCase();
-                if (nameA < nameB) // сортируем строки по возрастанию
+                if (nameA < nameB)
                     return sign1;
                 if (nameA > nameB)
                     return sign2;
-                return 0 // Никакой сортировки
+                return 0
             })
         }
     };
@@ -107,9 +133,11 @@ const Table: React.FC = () => {
 
     const handleSearch = (e: any) => {
         const term = e.target.value;
+        setTerm(term);
         const filtered = data.filter((item: any) => {
             return item.name.includes(term);
         });
+
         setList(sortData(filtered, sortValue, sortDir));
     };
 
@@ -126,15 +154,15 @@ const Table: React.FC = () => {
                             </div>
                             <div className="filter-item__content">
                                 <div className="items">
-                                    <div className="items__item">
-                                        <Radio onChange={onSort} checked text="ID" value="id" name="sort1" />
-                                    </div>
-                                    <div className="items__item">
-                                        <Radio onChange={onSort} text={t("name")} value="name" name="sort1" />
-                                    </div>
-                                    <div className="items__item">
-                                        <Radio onChange={onSort} text={t("age")} value="age" name="sort1" />
-                                    </div>
+                                    {
+                                        ['id', 'name', 'age'].map((radio, index) => {
+                                            return (
+                                                <div key={index} className="items__item">
+                                                    <Radio onChange={onSort} checked={radio === sortValue} text={t(radio)} value={radio} name="sort1" />
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -144,10 +172,10 @@ const Table: React.FC = () => {
                             <div className="filter-item__content">
                                 <div className="items">
                                     <div className="items__item">
-                                        <Radio onChange={onChangeSortDir} checked text={t("ascending")} value="increase" name="sort2" />
+                                        <Radio onChange={onChangeSortDir} checked={sortDir === SortDir.increase} text={t("ascending")} value="increase" name="sort2" />
                                     </div>
                                     <div className="items__item">
-                                        <Radio onChange={onChangeSortDir} text={t("descending")} value="decrease" name="sort2" />
+                                        <Radio onChange={onChangeSortDir} checked={sortDir === SortDir.decrease} text={t("descending")} value="decrease" name="sort2" />
                                     </div>
                                 </div>
                             </div>
@@ -161,12 +189,15 @@ const Table: React.FC = () => {
                         </div>
                         <div className="filter-item__content">
                             <div className="items">
-                                <div className="items__item">
-                                    <Radio onChange={onChangeView} checked text={t("table")} value="table" name="view" />
-                                </div>
-                                <div className="items__item">
-                                    <Radio onChange={onChangeView} text={t("preview")} value="preview" name="view" />
-                                </div>
+                                {
+                                    ['table', 'preview'].map((radio, index) => {
+                                        return (
+                                            <div key={index} className="items__item">
+                                                <Radio onChange={onChangeView} checked={radio === listType} text={t(radio)} value={radio} name="view" />
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
                         </div>
                     </div>
@@ -200,10 +231,15 @@ const Table: React.FC = () => {
                 </div>
             </div>
             <div className="table__bottom">
-                { <ListComponent list={list} /> }
+                { <ListComponent toggleFavorite={toggleFavorite} list={list} /> }
             </div>
         </div>
     )
 };
 
-export default Table
+export default connect(
+    () => ({}),
+    {
+        actionSetData: actions.setData,
+        toggleFavorite: actions.toggleFavorite
+})(Table)
