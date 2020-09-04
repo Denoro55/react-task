@@ -3,13 +3,16 @@ import Table from "./components/table";
 import {
     BrowserRouter as Router,
     Route,
+    Switch
 } from "react-router-dom";
 
 function App() {
     return (
         <div className="App">
             <Router>
-                <Route to="/" component={Table} />
+                <Switch>
+                    <Route path="/" component={Table} />
+                </Switch>
             </Router>
         </div>
     );

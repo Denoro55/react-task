@@ -19,6 +19,8 @@ export default function useStepAnimation(list: any[], getItems: any) {
             if (i < items.length) {
                 items[i].classList.add('fade-animation-end');
                 i++;
+            } else {
+                clearInterval(animationInterval);
             }
         }, 100);
 

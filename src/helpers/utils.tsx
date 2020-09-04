@@ -14,7 +14,7 @@ export function parseUrl(url: string) {
     return qs.parse(url)
 }
 
-export function findInArrayAndUpdate(id: number, arr: any[], fn: any) {
+export function findInArrayAndUpdate(id: number, arr: any[], fn: Function) {
     const index = arr.findIndex((i: any) => i.id === id);
     const item = arr[index];
     const newItem = {

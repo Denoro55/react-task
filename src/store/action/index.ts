@@ -1,11 +1,21 @@
 import {Constants} from "../reducer";
 
-export const toggleFavorite = (id: number) => ({
+type ToggleFavoriteType = {
     type: Constants.TOGGLE_FAVORITE,
-    payload: id
+    payload: number
+}
+
+export const toggleFavorite = (id: number): ToggleFavoriteType => ({
+    type: Constants.TOGGLE_FAVORITE,
+    payload: id,
 });
 
-export const setData = (list: any[]) => ({
+type SetDataType = {
+    type: Constants.SET_DATA,
+    payload: any[]
+}
+
+export const setData = (list = []): SetDataType => ({
     type: Constants.SET_DATA,
     payload: list
 });

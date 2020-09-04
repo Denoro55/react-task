@@ -5,7 +5,7 @@ export enum Constants {
     TOGGLE_FAVORITE = 'TOGGLE_FAVORITE'
 }
 
-const rootReducer = (state: any = [], action: any) => {
+const rootReducer = (state = [], action: any) => {
     switch (action.type) {
         case Constants.SET_DATA:
             return action.payload;

@@ -1,6 +1,14 @@
 import React from "react";
 
-function Radio (props: any) {
+type PropsType = {
+    text: string,
+    name: string,
+    value: string,
+    onChange: Function,
+    checked?: boolean
+}
+
+const Radio: React.FC <PropsType> = (props) => {
     const { text, name, value, onChange, checked = false } = props;
 
     return (
@@ -11,6 +19,6 @@ function Radio (props: any) {
             </span>
         </label>
     )
-}
+};
 
 export default Radio
